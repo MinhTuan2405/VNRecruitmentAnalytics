@@ -6,7 +6,10 @@ from datetime import datetime
 
 header = ['job_id', 'title', 'income', 'location', 'experience', 
           'deadline', 'tags', 'job_description', 'candidate_requirements', 
-          'income_details', 'benefits', 'work_location', 'work_time', 'last_mod']
+          'income_details', 'benefits', 'work_location', 'work_time',
+          'logo_url', 'company_name', 'company_size', 'company_industries', 'company_location',
+          'job_level', 'candidate_education', 'quantity',
+          'last_mod']
 job_id = 1
 last_mod = datetime.now ()
 url = 'https://www.topcv.vn/viec-lam/truong-phong-kinh-doanh-xe-o-to-vinfast/1802279.html'
@@ -103,6 +106,62 @@ if work_time_div:
     work_time = work_time_div.get_text(strip=True)
 
 
+# about company
+logo_url, company_name, company_size, company_industries, company_location = None, None, None, None, None
+# ================= ABOUT COMPANY =================
+company_info = soup.find("div", class_="job-detail__company--information")
+
+# logo
+logo_tag = company_info.find("a", class_="company-logo") if company_info else None
+if logo_tag and logo_tag.img:
+    logo_url = logo_tag.img["src"]
+
+# company_name
+name_tag = company_info.find("a", class_="name") if company_info else None
+if name_tag:
+    company_name = name_tag.get_text(strip=True)
+
+# company_size
+size_tag = company_info.find("div", class_="job-detail__company--information-item company-scale") if company_info else None
+if size_tag:
+    value = size_tag.find("div", class_="company-value")
+    company_size = value.get_text(strip=True) if value else None
+
+# company_industries
+industry_tag = company_info.find("div", class_="job-detail__company--information-item company-field") if company_info else None
+if industry_tag:
+    value = industry_tag.find("div", class_="company-value")
+    company_industries = value.get_text(strip=True) if value else None
+
+# company_location
+location_tag = company_info.find("div", class_="job-detail__company--information-item company-address") if company_info else None
+if location_tag:
+    value = location_tag.find("div", class_="company-value")
+    company_location = value.get_text(strip=True) if value else None
+
+
+# about candidate and job
+job_level, candidate_education, quantity = None, None, None
+
+general_info_blocks = soup.find_all("div", class_="box-general-group")
+for block in general_info_blocks:
+    title_tag = block.find(class_="box-general-group-info-title")
+    value_tag = block.find(class_="box-general-group-info-value")
+    if not title_tag or not value_tag:
+        continue
+
+    label = title_tag.get_text(strip=True)
+    text_value = value_tag.get_text(strip=True)
+
+    if "Cấp bậc" in label:
+        job_level = text_value
+    elif "Học vấn" in label:
+        candidate_education = text_value
+    elif "Số lượng tuyển" in label: 
+        quantity = text_value
+
+
+
 print("Job id:", job_id)
 print("Title:", title_text)
 print("Income:", income_text)
@@ -117,6 +176,14 @@ print("benefits:", benefits)
 print("work_location:", work_location)
 print("work_time:", work_time)
 print("last_mod:", last_mod)
+print("logo_url:", logo_url)
+print("company_name:", company_name)
+print("company_size:", company_size)
+print("company_industries:", company_industries)
+print("company_location:", company_location)
+print("job_level:", job_level)
+print("candidate_education:", candidate_education)
+print("quantity:", quantity)
 
 # save to CSV
 with open('data.csv', 'w', encoding='utf-8-sig', newline="") as f:
@@ -136,5 +203,13 @@ with open('data.csv', 'w', encoding='utf-8-sig', newline="") as f:
         "benefits": benefits,
         "work_location": work_location,
         "work_time": work_time,
+        "logo_url": logo_url,
+        "company_name": company_name,
+        "company_size": company_size,
+        "company_industries": company_industries,
+        "company_location": company_location,
+        "job_level": job_level,
+        "candidate_education": candidate_education,
+        "quantity": quantity,
         "last_mod": last_mod
     })
