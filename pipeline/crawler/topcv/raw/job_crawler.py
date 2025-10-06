@@ -1,10 +1,12 @@
 import requests as rq
 from bs4 import BeautifulSoup
 import csv
+from datetime import datetime
 
 
-header = ['job_id', 'title', 'income', 'location', 'experience', 'deadline', 'tags']
+header = ['job_id', 'title', 'income', 'location', 'experience', 'deadline', 'tags', 'last_mod']
 job_id = 1
+last_mod = datetime.now ()
 url = 'https://www.topcv.vn/viec-lam/truong-phong-kinh-doanh-xe-o-to-vinfast/1802279.html'
 raw_html = rq.get(url)
 
@@ -58,6 +60,7 @@ print("Location:", location_text)
 print("Experience:", exp_text)
 print("Deadline:", deadline_text)
 print("All tags:", tag_list)
+print("last_mod:", last_mod)
 
 # save to CSV
 with open('data.csv', 'w', encoding='utf-8-sig', newline="") as f:
@@ -70,5 +73,6 @@ with open('data.csv', 'w', encoding='utf-8-sig', newline="") as f:
         "location": location_text,
         "experience": exp_text,
         "deadline": deadline_text,
-        "tags": tag_list
+        "tags": tag_list,
+        "last_mod": last_mod
     })
