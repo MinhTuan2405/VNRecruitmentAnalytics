@@ -2,8 +2,9 @@ import requests as rq
 from bs4 import BeautifulSoup
 import csv
 
-header = ['title', 'income', 'location', 'experience', 'deadline', 'tags']
 
+header = ['job_id', 'title', 'income', 'location', 'experience', 'deadline', 'tags']
+job_id = 1
 url = 'https://www.topcv.vn/viec-lam/truong-phong-kinh-doanh-xe-o-to-vinfast/1802279.html'
 raw_html = rq.get(url)
 
@@ -50,19 +51,20 @@ for tag in all_tags:
     
 
 
-
+print("Job id:", job_id)
 print("Title:", title_text)
 print("Income:", income_text)
 print("Location:", location_text)
 print("Experience:", exp_text)
 print("Deadline:", deadline_text)
-print("All tags: ", tag_list)
+print("All tags:", tag_list)
 
 # save to CSV
 with open('data.csv', 'w', encoding='utf-8-sig', newline="") as f:
     writer = csv.DictWriter(f, fieldnames=header)
     writer.writeheader()
     writer.writerow({
+        "job_id": job_id,
         "title": title_text,
         "income": income_text,
         "location": location_text,
